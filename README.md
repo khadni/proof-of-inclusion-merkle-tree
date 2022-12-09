@@ -42,9 +42,11 @@ A Merkle tree enables you to demonstrate the inclusion of a single piece of data
 
 This tutorial will teach you how to design a contract that whitelists addresses if they are found in a Merkle tree.
 
-### merkletree.cairo
+### 1. merkletree.cairo
 
-This code defines two functions, **`verify`** and **`calculate_root`**, in a **`MerkleTree`** namespace.
+> Code from: https://github.com/ncitron/cairo-merkle-distributor/blob/master/contracts/merkle.cairo
+
+This contract defines two functions, **`verify`** and **`calculate_root`**, in a **`MerkleTree`** namespace.
 
 **Verify function**
 
@@ -52,7 +54,7 @@ The `verify` function takes three inputs: a `leaf` value, a `merkle_root` value,
 
 If the two values are equal, the function returns 1, indicating that the proof is valid. Otherwise, it returns 0, indicating that the proof is not valid.
 
-```solidity
+```
 func verify{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         leaf: felt, merkle_root: felt, proof_len: felt, proof: felt*
     ) -> (res: felt) {
@@ -66,7 +68,6 @@ func verify{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         return (0,);
     }
 ```
-Code from: https://github.com/ncitron/cairo-merkle-distributor/blob/master/contracts/merkle.cairo
 
 **Calculate root function**
 
@@ -99,6 +100,15 @@ func calculate_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
         return (res,);
     }
 ```
-Code from: https://github.com/ncitron/cairo-merkle-distributor/blob/master/contracts/merkle.cairo
 
+### 2. whitelister.cairo
 
+> Code inspired from: https://github.com/ncitron/cairo-merkle-distributor/blob/master/contracts/distributor.cairo
+
+The contract maintains a Merkle root and a mapping called **`whitelisted_users`**, which tracks whether each user has been whitelisted or not.
+
+The contract has a function called **`whitelist`** which
+
+- allows users to be whitelisted if they can provide a valid Merkle proof that their address is included in the data set represented by the Merkle root,
+- marks the leaf in the Merkle tree corresponding to the user's address as "claimed" to prevent multiple whitelistings for the same address,
+- emits an event when a user is whitelisted which can be used by other contracts or applications to track the whitelisting of users.
