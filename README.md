@@ -1,4 +1,4 @@
-# StarkNet tutorial - How to prove inclusion with a Merkle tree?
+# StarkNet tutorial - Whitelisting Merkle proofs
 
 ## Introduction
 
@@ -38,9 +38,9 @@ So we just need three items out of an eight-element tree to verify that an eleme
 
 A Merkle tree enables you to demonstrate the inclusion of a single piece of data in a larger amount of data without having to provide the full set of data. This can be beneficial in a number of scenarios. This is for instance used to verify transaction integrity in blockchains.
 
-## Tutorial: how to design a contract that whitelists the addresses in a Merkle tree?
+## Tutorial
 
------- INTRO ------
+This tutorial will teach you how to design a contract that whitelists addresses if they are found in a Merkle tree.
 
 ### merkletree.cairo
 
@@ -66,13 +66,14 @@ func verify{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         return (0,);
     }
 ```
+Code from: https://github.com/ncitron/cairo-merkle-distributor/blob/master/contracts/merkle.cairo
 
 **Calculate root function**
 
 The `calculate_root` function takes a `curr` value, a `proof_len` value, and an array of `proof` values.
 If the `proof_len` is 0, the function simply returns the `curr` value. Otherwise, the function calculates the next element in the Merkle tree by concatenating the `curr` and `proof` values and hashing the result using the `hash2` function, which is imported from the `starkware.cairo.common.hash` module. The function then recursively calls itself to calculate the root of the subtree rooted at the current node, and returns the result.
 
-```solidity
+```
 func calculate_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         curr: felt, proof_len: felt, proof: felt*
     ) -> (res: felt) {
@@ -98,5 +99,6 @@ func calculate_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
         return (res,);
     }
 ```
+Code from: https://github.com/ncitron/cairo-merkle-distributor/blob/master/contracts/merkle.cairo
 
 
