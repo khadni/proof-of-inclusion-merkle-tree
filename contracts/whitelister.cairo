@@ -3,14 +3,14 @@
 %lang starknet
 
 // ##
-// ref: https://github.com/ncitron/cairo-merkle-distributor/blob/master/contracts/distributor.cairo
+// inspired from: https://github.com/ncitron/cairo-merkle-distributor/blob/master/contracts/distributor.cairo
 // ##
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.hash import hash2
 from starkware.cairo.common.uint256 import Uint256
 
-from contracts.merkle import merkle_verify
+from contracts.merkletree import merkle_verify
 
 @storage_var
 func merkle_root() -> (root: felt):
