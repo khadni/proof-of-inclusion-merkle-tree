@@ -47,6 +47,7 @@ func whitelist{
         pedersen_ptr: HashBuiltin*,
         range_check_ptr
     }(
+        merkletree_address: felt,
         recipient: felt,
         amount: Uint256,
         proof_len: felt,
@@ -65,7 +66,7 @@ func whitelist{
     // check that proof is valid
     let (root) = merkle_root.read();
     local root_loc = root;
-    let (proof_valid) = IMerkleTree.verify(leaf, root, proof_len, proof);
+    let (proof_valid) = IMerkleTree.verify(merkletree_address, leaf, root, proof_len, proof);
 
     assert proof_valid = 1;
 
