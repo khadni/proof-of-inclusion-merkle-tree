@@ -11,10 +11,14 @@ from starkware.cairo.common.hash import hash2
 from starkware.cairo.common.uint256 import Uint256
 from starkware.starknet.common.syscalls import get_caller_address
 
-from contracts.merkletree import verify
+from contracts.utils.Imerkletree import IMerkleTree
 
 @storage_var
 func merkle_root() -> (root: felt){
+}
+
+@storage_var
+func has_claimed(leaf: felt) -> (claimed: felt){
 }
 
 @storage_var
@@ -44,11 +48,15 @@ func whitelist{
         range_check_ptr
     }(
         recipient: felt,
+        amount: Uint256,
         proof_len: felt,
         proof: felt*
     ) {
 
-    let (leaf) = hash2{hash_ptr=pedersen_ptr}(recipient);
+    alloc_locals;
+
+    let (amount_hash) = hash2{hash_ptr=pedersen_ptr}(amount.low, amount.high);
+    let (leaf) = hash2{hash_ptr=pedersen_ptr}(recipient, amount_hash);
 
     // check that leaf has not been claimed
     let (claimed) = has_claimed.read(leaf);
@@ -57,7 +65,7 @@ func whitelist{
     // check that proof is valid
     let (root) = merkle_root.read();
     local root_loc = root;
-    let (proof_valid) = verify(leaf, root, proof_len, proof);
+    let (proof_valid) = IMerkleTree.verify(leaf, root, proof_len, proof);
 
     assert proof_valid = 1;
 
