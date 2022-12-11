@@ -60,17 +60,25 @@ func whitelist{
     let (leaf) = hash2{hash_ptr=pedersen_ptr}(recipient, amount_hash);
 
     // check that leaf has not been claimed
-    let (claimed) = has_claimed.read(leaf);
-    assert claimed = 0;
+    with_attr error_message("That leaf has already been claimed.") {
+        let (claimed) = has_claimed.read(leaf);
+        assert claimed = 0;
+    }
 
     // check that proof is valid
     let (root) = merkle_root.read();
     local root_loc = root;
     let (proof_valid) = IMerkleTree.verify(merkletree_address, leaf, root, proof_len, proof);
+    
+    with_attr error_message("Proof is not valid.") {
+        assert proof_valid = 1;
+    }
 
-    assert proof_valid = 1;
-
-    // do whatever you want here (token transfer, whitelisting, etc.)
+    // After checking that the leaf has not been claimed and that the proof is valid,
+    // do whatever custom logic you want here (token transfer, whitelisting, etc.)
+    // In the below case, we just add the caller address to a whitelist
+    
+    // Reading caller address
     let (sender_address) = get_caller_address();
     whitelisted_users.write(sender_address, 1);
 
